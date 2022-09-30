@@ -1,4 +1,5 @@
 
+from asyncio.log import logger
 import time
 
 
@@ -7,8 +8,10 @@ class TimerError(Exception):
 
 
 class Timer:
-    def __init__(self):
+    def __init__(self, text='Elapse time: {:0.4f} seconds.', logger=print):
         self._start_timer = None
+        self.text = text
+        self.logger = logger
 
     def start(self):
         if self._start_timer is not None:
@@ -21,6 +24,11 @@ class Timer:
             raise TimerError(
                 f'Timer is not running. Use start() to start ir first.')
 
-        elapse_time = time.perf_counter() - self._start_timer
+        elapsed_time = time.perf_counter() - self._start_timer
         self._start_timer = None
-        print(f'Elapse time is: {elapse_time:0.6f} seconds.')
+
+        if self.logger:
+            self.logger(self.text.format(elapsed_time))
+            # print(self.text.format(elapsed_time))
+
+        return elapsed_time
