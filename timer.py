@@ -8,10 +8,18 @@ class TimerError(Exception):
 
 
 class Timer:
-    def __init__(self, text='Elapse time: {:0.4f} seconds.', logger=print):
+
+    timers = {}
+
+    def __init__(self, name=None, text='Elapse time: {:0.4f} seconds.', logger=print):
         self._start_timer = None
+        self.name = name
         self.text = text
         self.logger = logger
+
+        # if name is passed, add new named timers to dictionary of timers.
+        if name:
+            self.timers.setdefault(name, 0)
 
     def start(self):
         if self._start_timer is not None:
@@ -30,5 +38,8 @@ class Timer:
         if self.logger:
             self.logger(self.text.format(elapsed_time))
             # print(self.text.format(elapsed_time))
+        if self.name:
+            # each timer will be an accumulation of time spent under those task names.
+            self.timers[self.name] += elapsed_time
 
         return elapsed_time
